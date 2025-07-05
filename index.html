@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PetVibe AU - Premium Pet Supplies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Inter font -->
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --teal: #0099FF;
+      --orange: #FF7A00;
+      --gray: #F5F5F5;
+      --radius: 8px;
+      --font: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--gray);
+      color: #222;
+    }
+    /* Navbar */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 0.5rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--orange);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .paw {
+      font-size: 1.5rem;
+    }
+    .nav-link, .nav-link-dropdown {
+      color: #222;
+      text-decoration: none;
+      font-weight: 500;
+      margin-right: 1rem;
+      position: relative;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-link:hover, .nav-link-dropdown:hover {
+      color: var(--teal);
+    }
+    .nav-link-dropdown {
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: #fff;
+      min-width: 160px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: var(--radius);
+      top: 2.2rem;
+      left: 0;
+      z-index: 20;
+    }
+    .nav-link-dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .dropdown-item {
+      padding: 0.7rem 1.2rem;
+      color: #222;
+      text-decoration: none;
+      display: block;
+      border-radius: var(--radius);
+      transition: background 0.2s;
+    }
+    .dropdown-item:hover {
+      background: var(--gray);
+      color: var(--teal);
+    }
+    .lang-toggle {
+      border: none;
+      background: var(--gray);
+      color: var(--teal);
+      font-weight: 600;
+      border-radius: var(--radius);
+      padding: 0.3rem 0.8rem;
+      margin-left: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .lang-toggle:hover {
+      background: #e0f0f0;
+    }
+    .cart-btn {
+      background: none;
+      border: none;
+      position: relative;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .cart-icon {
+      font-size: 1.5rem;
+      color: var(--teal);
+    }
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e74c3c;
+      color: #fff;
+      font-size: 0.8rem;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+    /* Hero */
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 260px;
+      background: url('https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(75,158,158,0.65);
+      z-index: 1;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      color: #fff;
+      text-align: center;
+      padding: 2.5rem 1rem;
+    }
+    .hero-title {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      letter-spacing: 1px;
+    }
+    .hero-sub {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    .hero-btn {
+      background: #fff;
+      color: var(--teal);
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      transition: background 0.2s, color 0.2s;
+    }
+    .hero-btn:hover {
+      background: var(--teal);
+      color: #fff;
+    }
+    /* Product Grid */
+    .product-section {
+      max-width: 1100px;
+      margin: 0 auto 2.5rem auto;
+      padding: 0 1rem;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .product-card:hover {
+      box-shadow: 0 6px 24px rgba(75,158,158,0.13);
+      transform: translateY(-4px) scale(1.02);
+    }
+    .product-img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      background: var(--gray);
+    }
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+    .product-price {
+      color: var(--teal);
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      font-size: 1.1rem;
+    }
+    .add-cart-btn {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .add-cart-btn:hover {
+      background: #357c7c;
+    }
+    .heart {
+      color: #fff;
+      font-size: 1.1rem;
+    }
+    /* Cart Modal */
+    .cart-modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.18);
+      z-index: 100;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .cart-modal-bg.active {
+      display: flex;
+    }
+    .cart-modal {
+      background: #fff;
+      border-radius: var(--radius);
+      margin-top: 5vh;
+      min-width: 320px;
+      max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+      position: relative;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .cart-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .cart-modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .cart-close {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .cart-close:hover {
+      color: #e74c3c;
+    }
+    .cart-items {
+      max-height: 260px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.7rem;
+      gap: 0.5rem;
+    }
+    .cart-item-img {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius);
+      object-fit: cover;
+      background: var(--gray);
+      margin-right: 0.7rem;
+    }
+    .cart-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .cart-item-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.1rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-item-qty {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+    }
+    .qty-btn {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .qty-btn:hover {
+      background: #357c7c;
+    }
+    .cart-item-remove {
+      background: none;
+      border: none;
+      color: #e74c3c;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
+    }
+    .cart-total-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .checkout-btn {
+      width: 100%;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.7rem 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .checkout-btn:hover {
+      background: #357c7c;
+    }
+    .cart-empty {
+      text-align: center;
+      color: #aaa;
+      margin: 2rem 0 1rem 0;
+      font-size: 1.1rem;
+    }
+    /* Footer */
+    .footer {
+      background: #fff;
+      padding: 2rem 1rem 1rem 1rem;
+      border-radius: var(--radius) var(--radius) 0 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+      margin-top: 2rem;
+    }
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto 1.2rem auto;
+    }
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .footer-social a {
+      color: var(--teal);
+      font-size: 1.5rem;
+      transition: color 0.2s;
+    }
+    .footer-social a:hover {
+      color: #357c7c;
+    }
+    .footer-subscribe {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .footer-subscribe input {
+      border: 1px solid #ddd;
+      border-radius: var(--radius);
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .footer-subscribe input:focus {
+      border: 1.5px solid var(--teal);
+    }
+    .footer-subscribe button {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .footer-subscribe button:hover {
+      background: #357c7c;
+    }
+    .footer-payments {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .footer-payments img {
+      height: 28px;
+      border-radius: 4px;
+      background: #f7f7f7;
+      padding: 2px 8px;
+    }
+    .footer-bottom {
+      text-align: center;
+      color: #888;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+    }
+    /* Responsive */
+    @media (max-width: 900px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 600px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.7rem 0.7rem;
+      }
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-row {
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: flex-start;
+      }
+    }
+    /* 产品详情轮播 */
+    #detail-carousel {
+      width: 100%;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--gray);
+    }
+    .carousel-img {
+      width: 220px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: opacity 0.3s;
+    }
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.85);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.5rem;
+      color: var(--orange);
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s;
+    }
+    .carousel-arrow:hover {
+      background: var(--orange);
+      color: #fff;
+    }
+    .carousel-arrow.left { left: 10px; }
+    .carousel-arrow.right { right: 10px; }
+    .carousel-dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ddd;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .carousel-dot.active {
+      background: var(--orange);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="logo"><span class="paw">🐾</span>DoqiPaw</span>
+      <a class="nav-link-dropdown" id="shop-link">
+        <span class="nav-link" id="shop-txt">Shop</span>
+        <div class="dropdown-content" id="shop-dropdown">
+          <a class="dropdown-item" data-cat="all">All Products</a>
+          <a class="dropdown-item" data-cat="dog">Organic Dog Treats</a>
+          <a class="dropdown-item" data-cat="cat">Cat Scratching Posts</a>
+          <a class="dropdown-item" data-cat="fish">Aquarium Kits</a>
+        </div>
+      </a>
+      <a class="nav-link" id="about-link" href="#">About</a>
+      <a class="nav-link" id="contact-link" href="#">Contact</a>
+    </div>
+    <div>
+      <button class="lang-toggle" id="lang-toggle">中文</button>
+      <button class="cart-btn" id="cart-btn" aria-label="Cart">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+      <button class="lang-toggle" id="user-btn" style="margin-left:0.5rem;">登录</button>
+    </div>
+  </nav>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-title" id="hero-title">Premium Pet Supplies 🐾</div>
+      <div class="hero-sub" id="hero-sub">Free Shipping Over $50 AUD</div>
+      <button class="hero-btn" id="hero-btn">Shop Now →</button>
+    </div>
+  </section>
+  <!-- Product Grid -->
+  <section class="product-section">
+    <div class="product-grid" id="product-grid">
+      <!-- JS渲染商品卡片 -->
+    </div>
+  </section>
+  <!-- 产品详情弹窗 -->
+  <div class="cart-modal-bg" id="detail-modal-bg">
+    <div class="cart-modal" style="max-width:480px;min-width:320px;padding:1.5rem 1.2rem 1.2rem 1.2rem;">
+      <div class="cart-modal-header">
+        <span class="cart-modal-title" id="detail-title"></span>
+        <button class="cart-close" id="detail-close" aria-label="Close">&times;</button>
+      </div>
+      <div id="detail-carousel" style="position:relative;text-align:center;margin-bottom:1rem;"></div>
+      <div id="detail-desc" style="margin-bottom:1rem;color:#444;font-size:1.05rem;"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span id="detail-price" style="font-weight:700;color:var(--orange);font-size:1.1rem;"></span>
+        <button class="add-cart-btn" id="detail-add-btn"><span class="heart">❤</span> <span id="detail-add-txt"></span></button>
+      </div>
+    </div>
+  </div>
+  <!-- Cart Modal -->
+  <div class="cart-modal-bg" id="cart-modal-bg">
+    <div class="cart-modal">
+      <div class="cart-modal-header">
+        <span class="cart-modal-title" id="cart-title">Shopping Cart</span>
+        <button class="cart-close" id="cart-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="cart-items" id="cart-items"></div>
+      <div class="cart-total-row">
+        <span id="cart-total-label">Total</span>
+        <span id="cart-total">$0.00</span>
+      </div>
+      <button class="checkout-btn" id="checkout-btn">Checkout</button>
+    </div>
+  </div>
+  <!-- 登录/注册弹窗 -->
+  <div class="cart-modal-bg" id="auth-modal-bg">
+    <div class="cart-modal" style="max-width:360px;min-width:280px;">
+      <div class="cart-modal-header">
+        <span class="cart-modal-title" id="auth-modal-title">登录</span>
+        <button class="cart-close" id="auth-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="auth-form" style="display:flex;flex-direction:column;gap:1rem;">
+        <input type="email" id="auth-email" placeholder="邮箱" required style="padding:0.5rem 1rem;">
+        <input type="password" id="auth-password" placeholder="密码" required style="padding:0.5rem 1rem;">
+        <button type="submit" class="checkout-btn" id="auth-submit">登录</button>
+        <div style="text-align:center;font-size:0.95rem;">
+          <span id="auth-toggle-link" style="color:var(--teal);cursor:pointer;">没有账号？注册</span>
+        </div>
+        <div id="auth-error" style="color:#e74c3c;text-align:center;font-size:0.95rem;"></div>
+      </form>
+    </div>
+  </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-row">
+      <div class="footer-social">
+        <a href="#" aria-label="Instagram"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 8h-2a2 2 0 0 0-2 2v2h4"/><path d="M12 16v-4"/></svg></a>
+      </div>
+      <form class="footer-subscribe" onsubmit="event.preventDefault();">
+        <input type="email" id="subscribe-input" placeholder="Enter your email" required>
+        <button type="submit" id="subscribe-btn">Subscribe</button>
+      </form>
+      <div class="footer-payments">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Afterpay-logo.png" alt="Afterpay">
+      </div>
+    </div>
+    <div class="footer-bottom">
+      &copy; 2024 DoqiPaw. All rights reserved.
+    </div>
+  </footer>
+  <!-- JS逻辑 -->
+  <script>
+    // 替换为你的 Supabase 项目参数
+    const SUPABASE_URL = 'https://supabase.com/dashboard/project/pgcustakzudvqyoptrhq/settings/api-keyshttps://pgcustakzudvqyoptrhq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBnY3VzdGFrenVkdnF5b3B0cmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE3MTkxMTAsImV4cCI6MjA2NzI5NTExMH0.gdTdRgOzpmId2ad53r4_4_Zcn7zbV8vmRcEaAojalaw';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 商品数据
+    const products = [
+      {
+        id: 1,
+        name: "Pet Water Bottle + Food Box 300ML",
+        nameZh: "宠物水杯300ML+狗粮盒",
+        desc: "Portable water bottle and food container for pets, perfect for travel and outdoor walks.",
+        descZh: "便携式宠物水杯和狗粮盒，适合外出旅行和日常遛狗。",
+        price: 39.99,
+        images: [
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/1.jpg",
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/2.jpg",
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/3.jpg",
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/4.jpg",
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/5.jpg",
+          "水杯整合数据包/宠物水杯300ML+狗粮盒英文详细CWSB02/白底图/6.jpg"
+        ],
+        cat: "pet"
+      },
+      {
+        id: 2,
+        name: "Smart Pet Feeding Disk (Blue)",
+        nameZh: "狗狗智慧饮食轮盘（湖蓝）",
+        desc: "Interactive feeding disk for dogs, encourages slow eating and fun mealtime.",
+        descZh: "狗狗益智饮食轮盘，趣味慢食，提升用餐乐趣。",
+        price: 49.99,
+        images: [
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/1.jpg",
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/2.jpg",
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/3.jpg",
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/4.jpg",
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/5.jpg",
+          "狗狗智慧饮食轮盘详情 英文GGZHYSLP01/湖蓝/6.jpg"
+        ],
+        cat: "pet"
+      }
+    ];
+
+    // 文本多语言
+    const i18n = {
+      en: {
+        shop: "Shop",
+        about: "About",
+        contact: "Contact",
+        all: "All Products",
+        dog: "Organic Dog Treats",
+        cat: "Cat Scratching Posts",
+        fish: "Aquarium Kits",
+        heroTitle: "Premium Pet Supplies 🐾",
+        heroSub: "Free Shipping Over $50 AUD",
+        shopNow: "Shop Now →",
+        addToCart: "Add to Cart",
+        cart: "Shopping Cart",
+        total: "Total",
+        checkout: "Checkout",
+        empty: "Your cart is empty.",
+        subscribe: "Subscribe",
+        emailPlaceholder: "Enter your email"
+      },
+      zh: {
+        shop: "商店",
+        about: "关于我们",
+        contact: "联系我们",
+        all: "所有产品",
+        dog: "有机狗狗零食",
+        cat: "猫抓柱",
+        fish: "水族箱套装",
+        heroTitle: "优质宠物用品 🐾",
+        heroSub: "满$50澳元免费送货",
+        shopNow: "立即购买 →",
+        addToCart: "加入购物车",
+        cart: "购物车",
+        total: "总计",
+        checkout: "结账",
+        empty: "您的购物车是空的。",
+        subscribe: "订阅",
+        emailPlaceholder: "输入您的邮箱"
+      }
+    };
+
+    let lang = "en";
+    let cart = [];
+    let currentCat = "all";
+
+    // DOM refs
+    const productGrid = document.getElementById('product-grid');
+    const langToggle = document.getElementById('lang-toggle');
+    const cartBtn = document.getElementById('cart-btn');
+    const cartModalBg = document.getElementById('cart-modal-bg');
+    const cartClose = document.getElementById('cart-close');
+    const cartItems = document.getElementById('cart-items');
+    const cartCount = document.getElementById('cart-count');
+    const cartTotal = document.getElementById('cart-total');
+    const cartTitle = document.getElementById('cart-title');
+    const cartTotalLabel = document.getElementById('cart-total-label');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const shopDropdown = document.getElementById('shop-dropdown');
+    const shopTxt = document.getElementById('shop-txt');
+    const heroTitle = document.getElementById('hero-title');
+    const heroSub = document.getElementById('hero-sub');
+    const heroBtn = document.getElementById('hero-btn');
+    const subscribeInput = document.getElementById('subscribe-input');
+    const subscribeBtn = document.getElementById('subscribe-btn');
+    // 分类切换
+    shopDropdown.querySelectorAll('.dropdown-item').forEach(item => {
+      item.onclick = () => {
+        currentCat = item.getAttribute('data-cat');
+        renderProducts();
+      }
+    });
+
+    // 语言切换
+    langToggle.onclick = () => {
+      lang = lang === "en" ? "zh" : "en";
+      renderLang();
+      renderProducts();
+      renderCart();
+    };
+
+    function renderLang() {
+      langToggle.textContent = lang === "en" ? "中文" : "EN";
+      shopTxt.textContent = i18n[lang].shop;
+      document.getElementById('about-link').textContent = i18n[lang].about;
+      document.getElementById('contact-link').textContent = i18n[lang].contact;
+      shopDropdown.querySelectorAll('.dropdown-item')[0].textContent = i18n[lang].all;
+      shopDropdown.querySelectorAll('.dropdown-item')[1].textContent = i18n[lang].dog;
+      shopDropdown.querySelectorAll('.dropdown-item')[2].textContent = i18n[lang].cat;
+      shopDropdown.querySelectorAll('.dropdown-item')[3].textContent = i18n[lang].fish;
+      heroTitle.textContent = i18n[lang].heroTitle;
+      heroSub.textContent = i18n[lang].heroSub;
+      heroBtn.textContent = i18n[lang].shopNow;
+      cartTitle.textContent = i18n[lang].cart;
+      cartTotalLabel.textContent = i18n[lang].total;
+      checkoutBtn.textContent = i18n[lang].checkout;
+      subscribeInput.placeholder = i18n[lang].emailPlaceholder;
+      subscribeBtn.textContent = i18n[lang].subscribe;
+    }
+
+    // 渲染商品
+    function renderProducts() {
+      productGrid.innerHTML = products.map(p => `
+        <div class="product-card" onclick="showProductDetail(${p.id})" style="cursor:pointer;">
+          <img class="product-img" src="${p.images[0]}" alt="${lang === 'en' ? p.name : p.nameZh}">
+          <div class="product-title">${lang === 'en' ? p.name : p.nameZh}</div>
+          <div class="product-price">AUD $${p.price.toFixed(2)}</div>
+          <button class="add-cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">
+            <span class="heart">❤</span> ${i18n[lang].addToCart}
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // 加入购物车
+    window.addToCart = function(id) {
+      let prod = products.find(p => p.id === id);
+      let found = cart.find(item => item.id === id);
+      if (found) {
+        found.qty += 1;
+      } else {
+        cart.push({ ...prod, qty: 1 });
+      }
+      renderCart();
+    };
+
+    // 渲染购物车
+    function renderCart() {
+      cartCount.textContent = cart.reduce((a, b) => a + b.qty, 0);
+      if (cart.length === 0) {
+        cartItems.innerHTML = `<div class="cart-empty">${i18n[lang].empty}</div>`;
+        cartTotal.textContent = "$0.00";
+        return;
+      }
+      cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <img class="cart-item-img" src="${item.images[0]}" alt="">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${lang === 'en' ? item.name : item.nameZh}</div>
+            <div class="cart-item-qty">
+              <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+              <span>${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+          </div>
+          <div style="font-weight:600;color:var(--teal);">A$${(item.price * item.qty).toFixed(2)}</div>
+          <button class="cart-item-remove" onclick="removeFromCart(${item.id})">&times;</button>
+        </div>
+      `).join('');
+      let total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      cartTotal.textContent = "A$" + total.toFixed(2);
+    }
+
+    // 改变数量
+    window.changeQty = function(id, delta) {
+      let item = cart.find(i => i.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== id);
+      }
+      renderCart();
+    };
+
+    // 移除
+    window.removeFromCart = function(id) {
+      cart = cart.filter(i => i.id !== id);
+      renderCart();
+    };
+
+    // 购物车弹窗
+    cartBtn.onclick = () => {
+      cartModalBg.classList.add('active');
+      renderCart();
+    };
+    cartClose.onclick = () => {
+      cartModalBg.classList.remove('active');
+    };
+    cartModalBg.onclick = (e) => {
+      if (e.target === cartModalBg) cartModalBg.classList.remove('active');
+    };
+    checkoutBtn.onclick = () => {
+      window.location.href = "#";
+    };
+
+    // Hero按钮跳转到商品区
+    heroBtn.onclick = () => {
+      window.scrollTo({ top: productGrid.offsetTop - 60, behavior: 'smooth' });
+    };
+
+    // 订阅
+    subscribeBtn.onclick = () => {
+      if (subscribeInput.value.trim()) {
+        subscribeBtn.textContent = lang === "en" ? "Subscribed!" : "已订阅！";
+        setTimeout(() => {
+          subscribeBtn.textContent = i18n[lang].subscribe;
+        }, 1800);
+        subscribeInput.value = "";
+      }
+    };
+
+    // 产品详情弹窗与轮播
+    const detailModalBg = document.getElementById('detail-modal-bg');
+    const detailClose = document.getElementById('detail-close');
+    const detailTitle = document.getElementById('detail-title');
+    const detailCarousel = document.getElementById('detail-carousel');
+    const detailDesc = document.getElementById('detail-desc');
+    const detailPrice = document.getElementById('detail-price');
+    const detailAddBtn = document.getElementById('detail-add-btn');
+    const detailAddTxt = document.getElementById('detail-add-txt');
+    let carouselIdx = 0;
+    let carouselTimer = null;
+    let detailProduct = null;
+
+    window.showProductDetail = function(id) {
+      detailProduct = products.find(p => p.id === id);
+      if (!detailProduct) return;
+      detailTitle.textContent = lang === 'en' ? detailProduct.name : detailProduct.nameZh;
+      detailDesc.textContent = lang === 'en' ? detailProduct.desc : detailProduct.descZh;
+      detailPrice.textContent = 'AUD $' + detailProduct.price.toFixed(2);
+      detailAddTxt.textContent = i18n[lang].addToCart;
+      carouselIdx = 0;
+      renderCarousel();
+      detailModalBg.classList.add('active');
+      clearInterval(carouselTimer);
+      carouselTimer = setInterval(() => {
+        carouselIdx = (carouselIdx + 1) % detailProduct.images.length;
+        renderCarousel();
+      }, 3000);
+    };
+
+    function renderCarousel() {
+      if (!detailProduct) return;
+      detailCarousel.innerHTML = `
+        <button class="carousel-arrow left" onclick="event.stopPropagation();carouselPrev()">&#8592;</button>
+        <img class="carousel-img" src="${detailProduct.images[carouselIdx]}" alt="" />
+        <button class="carousel-arrow right" onclick="event.stopPropagation();carouselNext()">&#8594;</button>
+        <div class="carousel-dots">
+          ${detailProduct.images.map((_,i)=>`<div class="carousel-dot${i===carouselIdx?' active':''}" onclick="event.stopPropagation();carouselGo(${i})"></div>`).join('')}
+        </div>
+      `;
+    }
+    window.carouselPrev = function() {
+      if (!detailProduct) return;
+      carouselIdx = (carouselIdx - 1 + detailProduct.images.length) % detailProduct.images.length;
+      renderCarousel();
+    }
+    window.carouselNext = function() {
+      if (!detailProduct) return;
+      carouselIdx = (carouselIdx + 1) % detailProduct.images.length;
+      renderCarousel();
+    }
+    window.carouselGo = function(idx) {
+      if (!detailProduct) return;
+      carouselIdx = idx;
+      renderCarousel();
+    }
+    detailClose.onclick = () => {
+      detailModalBg.classList.remove('active');
+      clearInterval(carouselTimer);
+    };
+    detailModalBg.onclick = (e) => {
+      if (e.target === detailModalBg) {
+        detailModalBg.classList.remove('active');
+        clearInterval(carouselTimer);
+      }
+    };
+    detailAddBtn.onclick = () => {
+      if (detailProduct) addToCart(detailProduct.id);
+      detailAddBtn.textContent = lang === 'en' ? 'Added!' : '已加入！';
+      setTimeout(()=>{
+        detailAddBtn.innerHTML = `<span class='heart'>❤</span> <span id='detail-add-txt'>${i18n[lang].addToCart}</span>`;
+      }, 1200);
+    };
+
+    // 认证弹窗相关
+    const authModalBg = document.getElementById('auth-modal-bg');
+    const authClose = document.getElementById('auth-close');
+    const authForm = document.getElementById('auth-form');
+    const authEmail = document.getElementById('auth-email');
+    const authPassword = document.getElementById('auth-password');
+    const authSubmit = document.getElementById('auth-submit');
+    const authToggleLink = document.getElementById('auth-toggle-link');
+    const authModalTitle = document.getElementById('auth-modal-title');
+    const authError = document.getElementById('auth-error');
+
+    let isLogin = true;
+
+    // 打开认证弹窗
+    function showAuthModal() {
+      authModalBg.classList.add('active');
+      authError.textContent = '';
+      authForm.reset();
+      isLogin = true;
+      updateAuthMode();
+    }
+
+    // 切换登录/注册
+    function updateAuthMode() {
+      if (isLogin) {
+        authModalTitle.textContent = lang === 'en' ? 'Login' : '登录';
+        authSubmit.textContent = lang === 'en' ? 'Login' : '登录';
+        authToggleLink.textContent = lang === 'en' ? "Don't have an account? Register" : "没有账号？注册";
+      } else {
+        authModalTitle.textContent = lang === 'en' ? 'Register' : '注册';
+        authSubmit.textContent = lang === 'en' ? 'Register' : '注册';
+        authToggleLink.textContent = lang === 'en' ? "Already have an account? Login" : "已有账号？登录";
+      }
+    }
+
+    // 关闭弹窗
+    authClose.onclick = () => { authModalBg.classList.remove('active'); };
+    authModalBg.onclick = (e) => { if (e.target === authModalBg) authModalBg.classList.remove('active'); };
+    authToggleLink.onclick = () => { isLogin = !isLogin; updateAuthMode(); };
+
+    // 登录/注册表单提交
+    authForm.onsubmit = async (e) => {
+      e.preventDefault();
+      authError.textContent = '';
+      const email = authEmail.value.trim();
+      const password = authPassword.value;
+      if (!email || !password) return;
+      authSubmit.disabled = true;
+      let res;
+      if (isLogin) {
+        res = await supabase.auth.signInWithPassword({ email, password });
+        if (res.error) {
+          authError.textContent = lang === 'en' ? 'Login failed: ' : '登录失败：' + res.error.message;
+        } else {
+          authModalBg.classList.remove('active');
+          // 登录成功后的处理，比如显示用户名、切换按钮等
+          alert(lang === 'en' ? 'Login successful!' : '登录成功！');
+        }
+      } else {
+        res = await supabase.auth.signUp({ email, password });
+        if (res.error) {
+          authError.textContent = lang === 'en' ? 'Register failed: ' : '注册失败：' + res.error.message;
+        } else {
+          authModalBg.classList.remove('active');
+          alert(lang === 'en' ? 'Register successful! Please check your email to verify.' : '注册成功！请查收邮箱验证。');
+        }
+      }
+      authSubmit.disabled = false;
+    };
+
+    // 初始化
+    renderLang();
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
