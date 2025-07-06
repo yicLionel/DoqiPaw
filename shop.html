@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>DoqiPaw 商店</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --teal: #0099FF;
+      --orange: #FF7A00;
+      --gray: #F5F5F5;
+      --radius: 8px;
+      --font: 'Inter', sans-serif;
+    }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: var(--gray);
+      color: #222;
+    }
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      padding: 0.5rem 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--orange);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .paw {
+      font-size: 1.5rem;
+    }
+    .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 500;
+      margin-right: 1rem;
+      position: relative;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--teal);
+    }
+    .cart-btn {
+      background: none;
+      border: none;
+      position: relative;
+      cursor: pointer;
+      margin-left: 1rem;
+    }
+    .cart-icon {
+      font-size: 1.5rem;
+      color: var(--teal);
+    }
+    .cart-count {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #e74c3c;
+      color: #fff;
+      font-size: 0.8rem;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+    .shop-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 2rem 0 1.5rem 0;
+      letter-spacing: 1px;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto 2.5rem auto;
+      padding: 0 1rem;
+    }
+    .product-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 1.2rem 1rem 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .product-card:hover {
+      box-shadow: 0 6px 24px rgba(75,158,158,0.13);
+      transform: translateY(-4px) scale(1.02);
+    }
+    .product-img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      background: var(--gray);
+    }
+    .product-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      text-align: center;
+    }
+    .product-desc {
+      color: #666;
+      font-size: 0.98rem;
+      text-align: center;
+      margin-bottom: 0.7rem;
+      min-height: 2.2em;
+    }
+    .product-price {
+      color: var(--teal);
+      font-weight: 700;
+      margin-bottom: 0.7rem;
+      font-size: 1.1rem;
+    }
+    .add-cart-btn {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .add-cart-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+    .add-cart-btn:hover:not(:disabled) {
+      background: #357c7c;
+    }
+    .sold-out {
+      color: #FF7A00;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    @media (max-width: 900px) {
+      .product-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 600px) {
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.7rem 0.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-left">
+      <span class="logo"><span class="paw">🐾</span>DoqiPaw</span>
+      <a class="nav-link" id="nav-home" href="index.html">Home</a>
+      <a class="nav-link" id="nav-shop" href="shop.html" style="color:var(--teal);font-weight:700;">Shop</a>
+      <a class="nav-link" id="nav-about" href="about.html">About</a>
+      <a class="nav-link" id="nav-contact" href="contact.html">Contact</a>
+    </div>
+    <div>
+      <button class="lang-toggle" id="lang-toggle">中文</button>
+      <button class="cart-btn" aria-label="Cart">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+  <div class="shop-title" id="shop-title">New Instore & Online</div>
+  <div class="product-grid" id="product-grid">
+    <!-- JS渲染产品卡片 -->
+  </div>
+  <script>
+    // 多语言文本
+    const colorMap = {
+      'en': {
+        '湖蓝': 'Blue', '粉色': 'Pink', '黄色': 'Yellow', '绿色': 'Green'
+      },
+      'zh': {
+        '湖蓝': '湖蓝', '粉色': '粉色', '黄色': '黄色', '绿色': '绿色'
+      }
+    };
+    const cupColors = ['湖蓝', '粉色', '黄色', '绿色'];
+    function getCupImgs(size, color) {
+      const base = size === 300 ? 'bottle_integrated/300ml/宠物水杯亚马逊详情-英文/' : 'bottle_integrated/500ml/500ml详情-英文/';
+      return [1,2,3,4,5,6].map(i => `${base}${color}/${i}.jpg`);
+    }
+    const i18n = {
+      en: {
+        home: "Home",
+        shop: "Shop",
+        about: "About",
+        contact: "Contact",
+        shopTitle: "New Instore & Online",
+        addToCart: "Add to Cart",
+        soldOut: "SOLD OUT",
+        products: [
+          {
+            title: "Pet Water Bottle 300ml",
+            desc: "Portable pet water bottle, 300ml, perfect for travel and outdoor walks.",
+            price: "$19.95",
+            colors: cupColors,
+            imgs: getCupImgs(300, '湖蓝'),
+            soldOut: false
+          },
+          {
+            title: "Pet Water Bottle 500ml",
+            desc: "Large capacity pet water bottle, 500ml, ideal for long walks and travel.",
+            price: "$24.95",
+            colors: cupColors,
+            imgs: getCupImgs(500, '湖蓝'),
+            soldOut: false
+          }
+        ]
+      },
+      zh: {
+        home: "首页",
+        shop: "商店",
+        about: "关于我们",
+        contact: "联系我们",
+        shopTitle: "新品上架 & 在线热卖",
+        addToCart: "加入购物车",
+        soldOut: "已售罄",
+        products: [
+          {
+            title: "宠物水杯300ml",
+            desc: "便携式宠物水杯，300ml，适合外出旅行和日常遛狗。",
+            price: "$19.95",
+            colors: cupColors,
+            imgs: getCupImgs(300, '湖蓝'),
+            soldOut: false
+          },
+          {
+            title: "宠物水杯500ml",
+            desc: "大容量宠物水杯，500ml，适合长时间外出和旅行使用。",
+            price: "$24.95",
+            colors: cupColors,
+            imgs: getCupImgs(500, '湖蓝'),
+            soldOut: false
+          }
+        ]
+      }
+    };
+    let lang = "en";
+    let cartCount = 0;
+    const langToggle = document.getElementById('lang-toggle');
+    const cartCountSpan = document.querySelector('.cart-count');
+    function renderLang() {
+      document.getElementById('nav-home').textContent = i18n[lang].home;
+      document.getElementById('nav-shop').textContent = i18n[lang].shop;
+      document.getElementById('nav-about').textContent = i18n[lang].about;
+      document.getElementById('nav-contact').textContent = i18n[lang].contact;
+      document.getElementById('shop-title').textContent = i18n[lang].shopTitle;
+      langToggle.textContent = lang === 'en' ? '中文' : 'EN';
+      renderProducts();
+    }
+    langToggle.onclick = function() {
+      lang = lang === 'en' ? 'zh' : 'en';
+      renderLang();
+    };
+    function renderProducts() {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = i18n[lang].products.map((p, idx) => `
+        <div class="product-card" onclick="showDetail(${idx})">
+          <img class="product-img" src="${p.imgs[0]}" alt="${p.title}">
+          <div class="product-title">${p.title}</div>
+          <div class="product-desc">${p.desc}</div>
+          <div class="product-price">${p.price}</div>
+          ${p.soldOut ? `<div class=\"sold-out\">${i18n[lang].soldOut}</div><button class=\"add-cart-btn\" disabled>${i18n[lang].addToCart}</button>` : `<button class=\"add-cart-btn\" onclick=\"event.stopPropagation();addToCart(${idx})\">${i18n[lang].addToCart}</button>`}
+        </div>
+      `).join('');
+    }
+    window.addToCart = function(idx) {
+      if(i18n[lang].products[idx].soldOut) return;
+      cartCount++;
+      cartCountSpan.textContent = cartCount;
+    };
+    // 详情弹窗DOM
+    const detailModal = document.createElement('div');
+    detailModal.style.display = 'none';
+    detailModal.style.position = 'fixed';
+    detailModal.style.inset = '0';
+    detailModal.style.background = 'rgba(0,0,0,0.18)';
+    detailModal.style.zIndex = '100';
+    detailModal.innerHTML = `
+      <div id="detail-content" style="background:#fff;border-radius:8px;max-width:420px;width:95vw;margin:2vh auto 0 auto;box-shadow:0 8px 32px rgba(0,0,0,0.18);padding:0.5rem 1.2rem 1.2rem 1.2rem;position:relative;">
+        <button id="detail-close" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:2.2rem;font-weight:900;color:#FF7A00;cursor:pointer;line-height:1;width:44px;height:44px;display:flex;align-items:center;justify-content:center;transition:background 0.18s;z-index:10;">&times;</button>
+        <div id="detail-carousel" style="text-align:center;margin-bottom:0.5rem;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;"></div>
+        <div id="detail-title" style="font-size:1.1rem;font-weight:700;margin-bottom:0.5rem;"></div>
+        <div id="detail-desc" style="margin-bottom:0.7rem;color:#444;font-size:1.01rem;"></div>
+        <div id="detail-price" style="font-weight:700;color:var(--orange);font-size:1.1rem;margin-bottom:1rem;"></div>
+        <button id="detail-add-btn" class="add-cart-btn" style="width:100%;font-size:1.05rem;"></button>
+      </div>
+    `;
+    document.body.appendChild(detailModal);
+    let detailIdx = 0, carouselIdx = 0, carouselTimer = null, currentColor = '湖蓝';
+    window.showDetail = function(idx) {
+      detailIdx = idx;
+      carouselIdx = 0;
+      currentColor = '湖蓝';
+      renderDetail();
+      detailModal.style.display = 'flex';
+      clearInterval(carouselTimer);
+      // 自动轮播时也丝滑
+      carouselTimer = setInterval(()=>{
+        const prod = i18n[lang].products[detailIdx];
+        const imgs = prod.imgs;
+        const img = document.getElementById('carousel-img');
+        if(img) {
+          img.style.opacity = 0;
+          setTimeout(()=>{
+            carouselIdx = (carouselIdx+1)%imgs.length;
+            img.src = imgs[carouselIdx];
+            img.style.opacity = 1;
+            // 更新小圆点
+            const carousel = document.getElementById('detail-carousel');
+            const dots = carousel.querySelectorAll('div[style*="width:8px"]');
+            dots.forEach((dot,i)=>dot.style.background = i===carouselIdx?'var(--orange)':'#ddd');
+          }, 200);
+        }
+      }, 3000);
+    };
+    function renderDetail() {
+      const prod = i18n[lang].products[detailIdx];
+      document.getElementById('detail-title').textContent = prod.title;
+      document.getElementById('detail-desc').textContent = prod.desc;
+      document.getElementById('detail-price').textContent = prod.price;
+      document.getElementById('detail-add-btn').textContent = prod.soldOut ? i18n[lang].soldOut : i18n[lang].addToCart;
+      document.getElementById('detail-add-btn').disabled = prod.soldOut;
+      // 切换图片
+      prod.imgs = getCupImgs(detailIdx===0?300:500, currentColor);
+      renderCarousel();
+      // 颜色选择按钮放在价格下方
+      let colorHtml = '<div id="color-row" style="display:flex;gap:10px;justify-content:center;margin:0.7rem 0 1rem 0;">';
+      prod.colors.forEach(color => {
+        colorHtml += `<button onclick=\"changeColor('${color}')\" style=\"padding:0.3rem 1.1rem;border-radius:16px;border:none;outline:none;cursor:pointer;font-weight:600;background:${currentColor===color?'#0099FF':'#eee'};color:${currentColor===color?'#fff':'#222'};transition:background 0.2s;\">${colorMap[lang][color]}</button>`;
+      });
+      colorHtml += '</div>';
+      document.getElementById('color-row') && document.getElementById('color-row').remove();
+      document.getElementById('detail-price').insertAdjacentHTML('afterend', colorHtml);
+    }
+    function renderCarousel() {
+      const prod = i18n[lang].products[detailIdx];
+      const imgs = prod.imgs;
+      const carousel = document.getElementById('detail-carousel');
+      // 渲染结构
+      carousel.innerHTML = `
+        <button style='position:absolute;left:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.85);border:none;border-radius:50%;width:32px;height:32px;font-size:1.2rem;color:var(--orange);cursor:pointer;z-index:2;' onclick='event.stopPropagation();carouselPrev()'>&#8592;</button>
+        <img id='carousel-img' src='${imgs[carouselIdx]}' style='width:100%;max-width:420px;max-height:340px;object-fit:contain;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#f5f5f5;opacity:0;transition:opacity 0.5s;'>
+        <button style='position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.85);border:none;border-radius:50%;width:32px;height:32px;font-size:1.2rem;color:var(--orange);cursor:pointer;z-index:2;' onclick='event.stopPropagation();carouselNext()'>&#8594;</button>
+        <div style='position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:2;'>
+          ${imgs.map((_,i)=>`<div style='width:8px;height:8px;border-radius:50%;background:${i===carouselIdx?'var(--orange)':'#ddd'};display:inline-block;cursor:pointer;' onclick='event.stopPropagation();carouselGo(${i})'></div>`).join('')}
+        </div>
+      `;
+      // 丝滑淡出-淡入
+      setTimeout(()=>{
+        const img = document.getElementById('carousel-img');
+        if(img) {
+          img.style.opacity = 0;
+          setTimeout(()=>{ img.style.opacity = 1; }, 60);
+        }
+      }, 10);
+    }
+    window.carouselPrev = function() {
+      const imgs = i18n[lang].products[detailIdx].imgs;
+      carouselIdx = (carouselIdx-1+imgs.length)%imgs.length;
+      renderCarousel();
+    }
+    window.carouselNext = function() {
+      const imgs = i18n[lang].products[detailIdx].imgs;
+      carouselIdx = (carouselIdx+1)%imgs.length;
+      renderCarousel();
+    }
+    window.carouselGo = function(i) {
+      carouselIdx = i;
+      renderCarousel();
+    }
+    window.changeColor = function(color) {
+      currentColor = color;
+      carouselIdx = 0;
+      renderDetail();
+    };
+    detailModal.onclick = function(e) {
+      if(e.target===detailModal){
+        detailModal.style.display='none';
+        clearInterval(carouselTimer);
+      }
+    };
+    document.getElementById('detail-close').onclick = function(){
+      detailModal.style.display='none';
+      clearInterval(carouselTimer);
+    };
+    document.getElementById('detail-add-btn').onclick = function(){
+      if(i18n[lang].products[detailIdx].soldOut) return;
+      cartCount++;
+      cartCountSpan.textContent = cartCount;
+      this.textContent = lang==='en'?'Added!':'已加入！';
+      setTimeout(()=>{
+        this.textContent = i18n[lang].addToCart;
+      }, 1200);
+    };
+    // 叉叉悬停高亮
+    setTimeout(()=>{
+      const closeBtn = document.getElementById('detail-close');
+      if(closeBtn) {
+        closeBtn.onmouseenter = ()=>{ closeBtn.style.background = 'rgba(255,122,0,0.12)'; };
+        closeBtn.onmouseleave = ()=>{ closeBtn.style.background = 'none'; };
+      }
+    }, 100);
+    renderLang();
+  </script>
+</body>
+</html>
