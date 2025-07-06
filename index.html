@@ -150,7 +150,7 @@
       z-index: 2;
       color: #fff;
       text-align: center;
-      padding: 2.5rem 1rem;
+      padding: 1.2rem 1rem 1.2rem 1rem;
     }
     .hero-title {
       font-size: 2.1rem;
@@ -491,7 +491,7 @@
     /* 产品详情轮播 */
     #detail-carousel {
       width: 100%;
-      height: 240px;
+      height: 400px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -501,8 +501,8 @@
       background: var(--gray);
     }
     .carousel-img {
-      width: 220px;
-      height: 220px;
+      width: 320px;
+      height: 320px;
       object-fit: cover;
       border-radius: var(--radius);
       box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -549,6 +549,81 @@
     .carousel-dot.active {
       background: var(--orange);
     }
+    .homepage-carousel-wrapper {
+      max-width: 1100px;
+      margin: 2.5rem auto 2.5rem auto;
+      padding: 0 1rem;
+    }
+    .homepage-carousel {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-width: 100%;
+      height: 440px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 6px 32px rgba(0,0,0,0.10);
+      background: #f7fafd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .homepage-carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      aspect-ratio: 16 / 9;
+      border-radius: 18px;
+      transition: opacity 0.5s;
+      background: #eaeaea;
+      display: block;
+    }
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.7);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 2rem;
+      color: var(--teal);
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      transition: background 0.2s, color 0.2s;
+      opacity: 0.7;
+    }
+    .carousel-arrow:hover {
+      background: var(--teal);
+      color: #fff;
+      opacity: 1;
+    }
+    .carousel-arrow.left { left: 18px; }
+    .carousel-arrow.right { right: 18px; }
+    .homepage-carousel-dots {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+    .homepage-carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #fff;
+      opacity: 0.7;
+      cursor: pointer;
+      border: 1.5px solid var(--teal);
+      transition: opacity 0.2s, background 0.2s;
+    }
+    .homepage-carousel-dot.active {
+      opacity: 1;
+      background: var(--teal);
+    }
   </style>
 </head>
 <body>
@@ -565,8 +640,8 @@
           <a class="dropdown-item" data-cat="fish">Aquarium Kits</a>
         </div>
       </a>
-      <a class="nav-link" id="about-link" href="#">About</a>
-      <a class="nav-link" id="contact-link" href="#">Contact</a>
+      <a class="nav-link" id="about-link" href="about.html">About</a>
+      <a class="nav-link" id="contact-link" href="contact.html">Contact</a>
     </div>
     <div>
       <button class="lang-toggle" id="lang-toggle">中文</button>
@@ -586,6 +661,15 @@
       <button class="hero-btn" id="hero-btn">Shop Now →</button>
     </div>
   </section>
+  <!-- 轮播图美化版 -->
+  <div class="homepage-carousel-wrapper">
+    <div id="homepage-carousel" class="homepage-carousel">
+      <button class="carousel-arrow left" onclick="goHomepageCarouselPrev()">&#8592;</button>
+      <img id="homepage-carousel-img" src="" alt="carousel" />
+      <button class="carousel-arrow right" onclick="goHomepageCarouselNext()">&#8594;</button>
+      <div class="homepage-carousel-dots" id="homepage-carousel-dots"></div>
+    </div>
+  </div>
   <!-- Product Grid -->
   <section class="product-section">
     <div class="product-grid" id="product-grid">
@@ -594,12 +678,12 @@
   </section>
   <!-- 产品详情弹窗 -->
   <div class="cart-modal-bg" id="detail-modal-bg">
-    <div class="cart-modal" style="max-width:480px;min-width:320px;padding:1.5rem 1.2rem 1.2rem 1.2rem;">
+    <div class="cart-modal" style="max-width:700px;min-width:400px;padding:1.5rem 1.2rem 1.2rem 1.2rem;">
       <div class="cart-modal-header">
         <span class="cart-modal-title" id="detail-title"></span>
         <button class="cart-close" id="detail-close" aria-label="Close">&times;</button>
       </div>
-      <div id="detail-carousel" style="position:relative;text-align:center;margin-bottom:1rem;"></div>
+      <div id="detail-carousel" style="position:relative;text-align:center;margin-bottom:1rem;height:340px;"></div>
       <div id="detail-desc" style="margin-bottom:1rem;color:#444;font-size:1.05rem;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <span id="detail-price" style="font-weight:700;color:var(--orange);font-size:1.1rem;"></span>
@@ -808,16 +892,20 @@
 
     // 渲染商品
     function renderProducts() {
-      productGrid.innerHTML = products.map(p => `
-        <div class="product-card" onclick="showProductDetail(${p.id})" style="cursor:pointer;">
-          <img class="product-img" src="${p.images[0]}" alt="${lang === 'en' ? p.name : p.nameZh}">
-          <div class="product-title">${lang === 'en' ? p.name : p.nameZh}</div>
-          <div class="product-price">AUD $${p.price.toFixed(2)}</div>
-          <button class="add-cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">
-            <span class="heart">❤</span> ${i18n[lang].addToCart}
-          </button>
-        </div>
-      `).join('');
+      fetch('/api/shop')
+        .then(res => res.json())
+        .then(data => {
+          productGrid.innerHTML = data.products.map(p => `
+            <div class="product-card" onclick="showProductDetail(${p.id})" style="cursor:pointer;">
+              <img class="product-img" src="${p.images[0]}" alt="${lang === 'en' ? p.name : p.nameZh}">
+              <div class="product-title">${lang === 'en' ? p.name : p.nameZh}</div>
+              <div class="product-price">AUD $${p.price.toFixed(2)}</div>
+              <button class="add-cart-btn" onclick="event.stopPropagation();addToCart(${p.id})">
+                <span class="heart">❤</span> ${i18n[lang].addToCart}
+              </button>
+            </div>
+          `).join('');
+        });
     }
 
     // 加入购物车
@@ -1050,6 +1138,51 @@
       }
       authSubmit.disabled = false;
     };
+
+    // 轮播图图片（狗狗+猫咪）
+    const homepageCarouselImages = [
+      'images/cat1.png',
+      'images/cat2.png',
+      'images/dog1.png',
+      'images/dog2.png',
+    ];
+
+    // 轮播图相关
+    const homepageCarousel = document.getElementById('homepage-carousel');
+    const homepageCarouselImg = document.getElementById('homepage-carousel-img');
+    const homepageCarouselDots = document.getElementById('homepage-carousel-dots');
+    let homepageCarouselIdx = 0;
+    let homepageCarouselTimer = null;
+
+    function renderHomepageCarousel() {
+      homepageCarouselImg.src = homepageCarouselImages[homepageCarouselIdx];
+      homepageCarouselDots.innerHTML = homepageCarouselImages.map((_, i) =>
+        `<div class="homepage-carousel-dot${i === homepageCarouselIdx ? ' active' : ''}" onclick="goHomepageCarousel(${i})"></div>`
+      ).join('');
+    }
+    window.goHomepageCarousel = function(idx) {
+      homepageCarouselIdx = idx;
+      renderHomepageCarousel();
+      resetHomepageCarouselTimer();
+    }
+    window.goHomepageCarouselPrev = function() {
+      homepageCarouselIdx = (homepageCarouselIdx - 1 + homepageCarouselImages.length) % homepageCarouselImages.length;
+      renderHomepageCarousel();
+      resetHomepageCarouselTimer();
+    }
+    window.goHomepageCarouselNext = function() {
+      homepageCarouselIdx = (homepageCarouselIdx + 1) % homepageCarouselImages.length;
+      renderHomepageCarousel();
+      resetHomepageCarouselTimer();
+    }
+    function resetHomepageCarouselTimer() {
+      clearInterval(homepageCarouselTimer);
+      homepageCarouselTimer = setInterval(window.goHomepageCarouselNext, 3500);
+    }
+    if (homepageCarousel) {
+      renderHomepageCarousel();
+      resetHomepageCarouselTimer();
+    }
 
     // 初始化
     renderLang();
